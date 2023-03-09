@@ -68,3 +68,38 @@ func SetNXDemo() {
 	}
 	fmt.Println(value)
 }
+
+// GetSetDemo
+// 第1次执行GetSet，没有旧值会抛出错误： redis: nil
+// 执行Set，设置旧值
+// 第2次执行GetSet，返回旧值： new_get_set_value1
+// 执行Get，得到新值： new_get_set_value2
+func GetSetDemo() {
+
+	redisClient, err := NewDefaultClient()
+	if err != nil {
+		panic(err)
+	}
+
+	val, err := redisClient.GetSet("new_get_set_key", "new_get_set_value1").Result()
+	if err != nil {
+		fmt.Println("第1次执行GetSet，没有旧值会抛出错误：", err)
+		_, err = redisClient.Set("new_get_set_key", "new_get_set_value1", 0).Result()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("执行Set，设置旧值")
+	}
+
+	val, err = redisClient.GetSet("new_get_set_key", "new_get_set_value2").Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("第2次执行GetSet，返回旧值：", val)
+
+	val, err = redisClient.Get("new_get_set_key").Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("执行Get，得到新值：", val)
+}
