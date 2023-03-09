@@ -70,10 +70,13 @@ func SetNXDemo() {
 }
 
 // GetSetDemo
-// 第1次执行GetSet，没有旧值会抛出错误： redis: nil
-// 执行Set，设置旧值
-// 第2次执行GetSet，返回旧值： new_get_set_value1
-// 执行Get，得到新值： new_get_set_value2
+//第1次执行GetSet，没有旧值会抛出错误： redis: nil
+//执行Set，设置旧值
+//第2次执行GetSet，返回旧值： new_get_set_value1
+//执行Get，得到新值： new_get_set_value2
+//新值的TTL： -1s
+//重新设置TTL避免Demo弄脏Redis，执行： expire new_get_set_key 10: true
+
 func GetSetDemo() {
 
 	redisClient, err := NewDefaultClient()
@@ -84,13 +87,14 @@ func GetSetDemo() {
 	val, err := redisClient.GetSet("new_get_set_key", "new_get_set_value1").Result()
 	if err != nil {
 		fmt.Println("第1次执行GetSet，没有旧值会抛出错误：", err)
-		_, err = redisClient.Set("new_get_set_key", "new_get_set_value1", 0).Result()
+		_, err = redisClient.Set("new_get_set_key", "new_get_set_value1", 10*time.Second).Result()
 		if err != nil {
 			panic(err)
 		}
 		fmt.Println("执行Set，设置旧值")
 	}
 
+	//在使用 DEL、SET、GETSET 等命令会清除对应的key的过期时间。
 	val, err = redisClient.GetSet("new_get_set_key", "new_get_set_value2").Result()
 	if err != nil {
 		panic(err)
@@ -102,4 +106,13 @@ func GetSetDemo() {
 		panic(err)
 	}
 	fmt.Println("执行Get，得到新值：", val)
+
+	ttlTime, err := redisClient.TTL("new_get_set_key").Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("新值的TTL：", ttlTime)
+
+	status := redisClient.Expire("new_get_set_key", 10*time.Second)
+	fmt.Println("重新设置TTL避免Demo弄脏Redis，执行：", status)
 }
