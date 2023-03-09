@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/go-redis/redis"
+	"reflect"
 	"time"
 )
 
@@ -115,4 +116,28 @@ func GetSetDemo() {
 
 	status := redisClient.Expire("new_get_set_key", 10*time.Second)
 	fmt.Println("重新设置TTL避免Demo弄脏Redis，执行：", status)
+}
+func MGetMSet() {
+	redisClient, err := NewDefaultClient()
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = redisClient.MSet("k1", "v1", "k2", "v2", "k3", "v3").Result()
+	if err != nil {
+		panic(err)
+	}
+
+	values, err := redisClient.MGet("k1", "k2", "k3").Result()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(values, reflect.TypeOf(values)) //[v1 v2 v3] []interface {}
+	delNum, err := redisClient.Del("k1", "k2", "k3").Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(delNum) // 3
+
 }

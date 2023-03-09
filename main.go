@@ -4,5 +4,6 @@ func main() {
 	//InitDemo()
 	//SetGetDemo()
 	//SetNXDemo()
-	GetSetDemo()
+	//GetSetDemo()
+	MGetMSet()
 }
