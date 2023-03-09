@@ -48,6 +48,11 @@ func SetGetDemo() {
 	fmt.Println(value)
 }
 
+// SetNXDemo
+//第1次执行SetNX状态： true
+//第2次执行SetNX状态： false
+//new_nx_value
+
 func SetNXDemo() {
 	redisClient, err := NewDefaultClient()
 	if err != nil {
