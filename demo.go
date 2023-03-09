@@ -141,3 +141,38 @@ func MGetMSet() {
 	fmt.Println(delNum) // 3
 
 }
+
+// BLPOPDemo
+//4
+//v1
+//[list v2]
+//[list v3]
+//[list v4]
+//(wait 5s)
+//Process finished with the exit code 0
+
+func BLPOPDemo() {
+	redisClient, err := NewDefaultClient()
+	if err != nil {
+		panic(err)
+	}
+	result, err := redisClient.RPush("list", "v1", "v2", "v3", "v4").Result()
+	if err != nil {
+		return
+	}
+	fmt.Println(result)
+
+	str, err := redisClient.LPop("list").Result()
+	if err != nil {
+		return
+	}
+	fmt.Println(str)
+
+	for i := 0; i < 6; i++ {
+		strs, err := redisClient.BLPop(5*time.Second, "list").Result()
+		if err != nil {
+			return
+		}
+		fmt.Println(strs)
+	}
+}

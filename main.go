@@ -5,5 +5,6 @@ func main() {
 	//SetGetDemo()
 	//SetNXDemo()
 	//GetSetDemo()
-	MGetMSet()
+	//MGetMSet()
+	BLPOPDemo()
 }
