@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/go-redis/redis"
+	"time"
 )
 
 // NewDefaultClient 根据redis配置初始化一个客户端
@@ -51,12 +52,17 @@ func SetNXDemo() {
 	if err != nil {
 		panic(err)
 	}
-	//redisClient.Set("new_key", "new_value", time.Second*10)
-	err = redisClient.Set("new_key", "new_value", 0).Err()
+	status, err := redisClient.SetNX("new_nx_key", "new_nx_value", 10*time.Second).Result()
 	if err != nil {
 		panic(err)
 	}
-	value, err := redisClient.Get("new_key").Result()
+	fmt.Println("第1次执行SetNX状态：", status)
+	status, err = redisClient.SetNX("new_nx_key", "new_nx_value", 10*time.Second).Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("第2次执行SetNX状态：", status)
+	value, err := redisClient.Get("new_nx_key").Result()
 	if err != nil {
 		panic(err)
 	}
