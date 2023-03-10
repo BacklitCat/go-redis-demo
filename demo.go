@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-redis/redis"
 	"reflect"
+	"sync"
 	"time"
 )
 
@@ -180,4 +181,29 @@ func BLPOPDemo() {
 		}
 		fmt.Println(strs)
 	}
+}
+
+// PubSubDemo
+// Message<TestChannel: msg>
+func PubSubDemo() {
+	redisClient, err := NewDefaultClient()
+	if err != nil {
+		panic(err)
+	}
+	channelName := "TestChannel"
+	pubSub := redisClient.Subscribe(channelName)
+	_, err = pubSub.Receive()
+	if err != nil {
+		panic(err)
+	}
+	ch := pubSub.Channel()
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		fmt.Println(<-ch)
+	}()
+
+	redisClient.Publish(channelName, "msg")
+	wg.Wait()
 }

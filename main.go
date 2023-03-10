@@ -3,8 +3,9 @@ package main
 func main() {
 	//InitDemo()
 	//SetGetDemo()
-	SetNXDemo()
+	//SetNXDemo()
 	//GetSetDemo()
 	//MGetMSet()
 	//BLPOPDemo()
+	PubSubDemo()
 }
